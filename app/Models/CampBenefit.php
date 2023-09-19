@@ -7,5 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class CampBenefit extends Model
 {
-    use HasFactory;
+    protected $table = 'camp_benefits';
+    protected $primaryKey = 'id';
+    protected $keyType = 'int';
+    public $incrementing = true;
+    public $timestamps = true;
+
+    protected $fillable = [
+        'camp_id','name'
+    ];
 }
