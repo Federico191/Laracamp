@@ -31,4 +31,8 @@ class UserController extends Controller
 
         return redirect(route('welcome'));
     }
+
+    public function calling() {
+
+    }
 }
