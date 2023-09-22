@@ -18,9 +18,11 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
-Route::get('/login', function () {
-    return view('login');
-})->name('login');
+Route::get('sign-in-google',[\App\Http\Controllers\UserController::class,'google'])
+    ->name('user.login.google');
+
+Route::get('auth/google/callback',[\App\Http\Controllers\UserController::class,'handleCallbackProvider'])
+    ->name('user.google.callback');
 
 Route::get('/checkout', function () {
     return view('checkout');
@@ -40,4 +42,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
