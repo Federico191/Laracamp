@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CheckoutController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,23 +19,27 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
-Route::get('sign-in-google',[\App\Http\Controllers\UserController::class,'google'])
+Route::get('sign-in-google', [\App\Http\Controllers\UserController::class, 'google'])
     ->name('user.login.google');
 
-Route::get('auth/google/callback',[\App\Http\Controllers\UserController::class,'handleCallbackProvider'])
+Route::get('auth/google/callback', [\App\Http\Controllers\UserController::class, 'handleCallbackProvider'])
     ->name('user.google.callback');
 
-Route::get('/checkout', function () {
-    return view('checkout');
-})->name('checkout');
+Route::middleware('auth')->group(function () {
 
-Route::get('/checkout-success', function () {
-    return view('success_checkout');
-})->name('checkout-success');
+    Route::get('/checkout/success', [CheckoutController::class, 'success'])
+        ->name('checkout.success');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+    Route::get('/checkout/{camp:slug}', [CheckoutController::class, 'create'])
+        ->name('checkout.create');
+
+    Route::post('/checkout/{camp}', [CheckoutController::class, 'store'])
+        ->name('checkout.store');
+
+    Route::get('/dashboard', [\App\Http\Controllers\HomeController::class, 'dashboard'])
+        ->name("user.dashboard");
+});
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
