@@ -22,7 +22,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-light">
     <div class="container">
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand" href="{{route('welcome')}}">
             <img src="{{asset('images/logo.png')}}" alt="">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
@@ -67,6 +67,7 @@
             </div>
         </div>
         <div class="row my-5">
+            @include('components.alert')
             <table class="table">
                 <tbody>
                 @forelse($checkouts as $checkout)
