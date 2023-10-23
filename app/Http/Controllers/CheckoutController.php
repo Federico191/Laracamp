@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\User\Checkout\Store;
+use App\Mail\Checkout\AfterCheckout;
 use App\Models\Camp;
 use App\Models\Checkout;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\Checkout\AfterSucces;
 
 class CheckoutController extends Controller
 {
@@ -56,6 +59,9 @@ class CheckoutController extends Controller
         $checkout->setExpiredAttributes($data['expired']);
         $checkout->save();
 
+        //sending email
+        Mail::to(Auth::user()->email)->send(new AfterCheckout($checkout));
+
         return redirect(route('checkout.success'));
     }
 
@@ -94,5 +100,4 @@ class CheckoutController extends Controller
     public function success() {
         return view('checkout.success');
     }
-
 }

@@ -47,7 +47,13 @@
             <div class="d-flex user-logged">
                 <a href="#">
                     Halo, {{Auth::user()->name}}!
-                    <img src="{{asset(Auth::user()->avatar)}}" class="user-photo" alt="">
+                    @if(Auth::user()->avatar)
+                    <img src="{{asset(Auth::user()->avatar)}}" class="user-photo" alt="" style="border-radius: 50%">
+
+                    @else
+                    <img src="https://ui-avatars.com/api/?name={{Auth::user()->name}}" class="user-photo" alt="" style="border-radius: 50%">
+
+                    @endif
                 </a>
             </div>
         </div>
@@ -90,8 +96,9 @@
                             @if($checkout->is_paid)
                                 <strong class="text-green">Payment Success</strong>
 
-                            @endif
+                            @else
                             <strong>Waiting for Payment</strong>
+                            @endif
                         </td>
                         <td>
                             <a href="https://wa.me//081xxxxxxxx?text=Hi, saya ingin bertanya mengenai kelas {{$checkout->Camp->title}}" class="btn btn-primary">
