@@ -1,11 +1,11 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\User\DashboardController as UserDashboard;
-use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\CheckoutController as AdminCheckout;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\User\CheckoutController;
+use App\Http\Controllers\User\DashboardController as UserDashboard;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
