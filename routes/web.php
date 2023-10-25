@@ -22,11 +22,15 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
+//socialite route
 Route::get('sign-in-google', [\App\Http\Controllers\UserController::class, 'google'])
     ->name('user.login.google');
-
 Route::get('auth/google/callback', [\App\Http\Controllers\UserController::class, 'handleCallbackProvider'])
     ->name('user.google.callback');
+
+//midtrans route
+Route::get('payment/success',[\App\Http\Controllers\UserController::class,'midtransCallback']);
+Route::post('payment/success',[\App\Http\Controllers\UserController::class,'midtransCallback']);
 
 Route::middleware('auth')->group(function () {
 

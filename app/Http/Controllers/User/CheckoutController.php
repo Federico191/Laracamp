@@ -35,14 +35,14 @@ class CheckoutController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Camp $camp,Request $request)
+    public function create(Camp $camp, Request $request)
     {
         if ($camp->isRegistered) {
-            $request->session()->flash('error',"You already registered on {$camp->title} camp.");
+            $request->session()->flash('error', "You already registered on {$camp->title} camp.");
             return redirect(route('user.dashboard'));
         }
 
-        return view('checkout.create',[
+        return view('checkout.create', [
             'camp' => $camp
         ]);
     }
@@ -106,12 +106,14 @@ class CheckoutController extends Controller
         //
     }
 
-    public function success() {
+    public function success()
+    {
         return view('checkout.success');
     }
 
-    public function getSnapRedirect(Checkout $checkout) {
-        $order_id = $checkout->id.'-'.\Str::random(5);
+    public function getSnapRedirect(Checkout $checkout)
+    {
+        $order_id = $checkout->id . '-' . \Str::random(5);
         $price = $checkout->Camp->price * 1000;
 
         $checkout->midtrans_booking_code = $order_id;
@@ -162,5 +164,49 @@ class CheckoutController extends Controller
             echo $e->getMessage();
             return false;
         }
+    }
+
+    public function midtransCallback(Request $request)
+    {
+        $notif = new Midtrans\Notification();
+
+        $transaction_status = $notif->transaction_status;
+        $fraud = $notif->fraud_status;
+
+        $checkout_id = explode('-', $notif->order_id[0]);
+        $checkout = Checkout::find($checkout_id);
+
+        if ($transaction_status == 'capture') {
+            if ($fraud == 'challenge') {
+                // TODO Set payment status in merchant's database to 'challenge'
+                $checkout->payment_status = 'pending';
+            } else if ($fraud == 'accept') {
+                // TODO Set payment status in merchant's database to 'success'
+                $checkout->payment_status = 'paid';
+            }
+        } else if ($transaction_status == 'cancel') {
+            if ($fraud == 'challenge') {
+                // TODO Set payment status in merchant's database to 'failure'
+                $checkout->payment_status = 'failed';
+            } else if ($fraud == 'accept') {
+                // TODO Set payment status in merchant's database to 'failure'
+                $checkout->payment_status = 'failed';
+            }
+        } else if ($transaction_status == 'deny') {
+            // TODO Set payment status in merchant's database to 'failure'
+            $checkout->payment_status = 'failed';
+        } else if ($transaction_status == 'settlement') {
+            // TODO set payment status in merchant's database to 'Settlement'
+            $checkout->payment_status = 'paid';
+        } else if ($transaction_status == 'pending') {
+            // TODO set payment status in merchant's database to 'Pending'
+            $checkout->payment_status = 'pending';
+        } else if ($transaction_status == 'expire') {
+            // TODO set payment status in merchant's database to 'expire'
+            $checkout->payment_status = 'failed';
+        }
+
+        $checkout->save();
+        return view('checkout.success');
     }
 }
