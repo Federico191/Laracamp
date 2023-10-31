@@ -48,10 +48,11 @@
                 <a href="#">
                     Halo, {{Auth::user()->name}}!
                     @if(Auth::user()->avatar)
-                    <img src="{{asset(Auth::user()->avatar)}}" class="user-photo" alt="" style="border-radius: 50%">
+                        <img src="{{asset(Auth::user()->avatar)}}" class="user-photo" alt="" style="border-radius: 50%">
 
                     @else
-                    <img src="https://ui-avatars.com/api/?name={{Auth::user()->name}}" class="user-photo" alt="" style="border-radius: 50%">
+                        <img src="https://ui-avatars.com/api/?name={{Auth::user()->name}}" class="user-photo" alt=""
+                             style="border-radius: 50%">
 
                     @endif
                 </a>
@@ -93,15 +94,16 @@
                             <strong>{{$checkout->Camp->price}}k</strong>
                         </td>
                         <td>
-                            @if($checkout->is_paid)
-                                <strong class="text-green">Payment Success</strong>
-
-                            @else
-                            <strong>Waiting for Payment</strong>
+                            <strong>{{$checkout->payment_status}}</strong>
+                        </td>
+                        <td>
+                            @if($checkout->payment_status == 'Waiting')
+                                <a href="{{$checkout->midtrans_url}}" class="btn btn-primary">Pay Here</a>
                             @endif
                         </td>
                         <td>
-                            <a href="https://wa.me//081xxxxxxxx?text=Hi, saya ingin bertanya mengenai kelas {{$checkout->Camp->title}}" class="btn btn-primary">
+                            <a href="https://wa.me//081xxxxxxxx?text=Hi, saya ingin bertanya mengenai kelas {{$checkout->Camp->title}}"
+                               class="btn btn-primary">
                                 Contact Support
                             </a>
                         </td>
@@ -109,7 +111,7 @@
                 @empty
                     <tr>
                         <td colspan="5"></td>
-                        <h3>No Data</h3>
+                        <h3>No Camp Registered</h3>
                     </tr>
 
                 @endforelse

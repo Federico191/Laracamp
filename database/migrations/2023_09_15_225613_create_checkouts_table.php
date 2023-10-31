@@ -11,9 +11,9 @@ return new class extends Migration {
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('camp_id');
-            $table->string('card_number',20);
-            $table->date('expired');
-            $table->string('cvc',3);
+            $table->string('payment_status',100)->default('waiting');
+            $table->string('midtrans_url')->nullable();
+            $table->string('midtrans_booking_code')->nullable();
             $table->boolean('is_paid')->default(false);
             $table->timestamps();
             $table->softDeletes();

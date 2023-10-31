@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Midtrans;
+use Str;
 
 class CheckoutController extends Controller
 {
@@ -62,10 +63,12 @@ class CheckoutController extends Controller
         $user->email = $data['email'];
         $user->name = $data['name'];
         $user->occupation = $data['occupation'];
+        $user->phone = $data['phone'];
+        $user->address = $data['address'];
         $user->save();
 
         //create checkout
-        $checkout = new Checkout($data);
+        $checkout = Checkout::create($data);
         $this->getSnapRedirect($checkout);
 
         //sending email
@@ -113,7 +116,7 @@ class CheckoutController extends Controller
 
     public function getSnapRedirect(Checkout $checkout)
     {
-        $order_id = $checkout->id . '-' . \Str::random(5);
+        $order_id = $checkout->id . '-' . Str::random(5);
         $price = $checkout->Camp->price * 1000;
 
         $checkout->midtrans_booking_code = $order_id;
@@ -123,26 +126,26 @@ class CheckoutController extends Controller
             'gross_amount' => $price
         ];
 
-        $item_details = [
+        $item_details[] = [
             'id' => $order_id,
             'price' => $price,
             'quantity' => 1,
-            'name' => "Payment for {$checkout->Camp->name} Camp"
+            'name' => "Payment for {$checkout->Camp->title} Camp"
         ];
 
         $userData = [
             'first_name' => $checkout->User->name,
-            'last_name' => '',
+            'last_name' => "",
             'phone' => $checkout->User->phone,
             'address' => $checkout->User->address,
-            'city' => '',
-            'postal_code' => '',
+            'city' => "",
+            'postal_code' => "",
             'country_code' => 'IDN'
         ];
 
         $customer_details = [
             'first_name' => $checkout->User->name,
-            'last_name' => '',
+            'last_name' => "",
             'email' => $checkout->User->email,
             'phone' => $checkout->User->phone,
             'billing_address' => $userData,
@@ -160,20 +163,20 @@ class CheckoutController extends Controller
             $checkout->midtrans_url = $paymentUrl;
             $checkout->save();
 
+            return $paymentUrl;
         } catch (\Exception $e) {
-            echo $e->getMessage();
             return false;
         }
     }
 
     public function midtransCallback(Request $request)
     {
-        $notif = new Midtrans\Notification();
+        $notif = $request->method() == 'POST' ? new Midtrans\Notification() : Midtrans\Transaction::status($request->order_id);
 
         $transaction_status = $notif->transaction_status;
         $fraud = $notif->fraud_status;
 
-        $checkout_id = explode('-', $notif->order_id[0]);
+        $checkout_id = explode('-', $notif->order_id)[0];
         $checkout = Checkout::find($checkout_id);
 
         if ($transaction_status == 'capture') {
