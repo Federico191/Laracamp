@@ -1,11 +1,11 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\User\DashboardController as UserDashboard;
-use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\CheckoutController as AdminCheckout;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\User\CheckoutController;
+use App\Http\Controllers\User\DashboardController as UserDashboard;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,11 +22,15 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
+//socialite route
 Route::get('sign-in-google', [\App\Http\Controllers\UserController::class, 'google'])
     ->name('user.login.google');
-
 Route::get('auth/google/callback', [\App\Http\Controllers\UserController::class, 'handleCallbackProvider'])
     ->name('user.google.callback');
+
+//midtrans route
+Route::get('payment/success',[CheckoutController::class,'midtransCallback']);
+Route::post('payment/success',[CheckoutController::class,'midtransCallback']);
 
 Route::middleware('auth')->group(function () {
 

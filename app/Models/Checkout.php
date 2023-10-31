@@ -18,7 +18,7 @@ class Checkout extends Model
     public $timestamps = true;
 
     protected $fillable =
-        ['user_id','camp_id','card_number','expired','cvc','is_paid'];
+        ['user_id','camp_id'];
 
     public function setExpiredAttributes($value) {
          $this->attributes['expired'] = date('Y-m-t', strtotime($value));
